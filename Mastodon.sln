@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26403.7
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mastodon", "Mastodon\Mastodon.csproj", "{CE92A3F4-6F51-4580-B9BF-71FDAF03EF4F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample", "Sample\Sample.csproj", "{8449A6D4-369A-42D8-98CB-292381113E87}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CE92A3F4-6F51-4580-B9BF-71FDAF03EF4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE92A3F4-6F51-4580-B9BF-71FDAF03EF4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE92A3F4-6F51-4580-B9BF-71FDAF03EF4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE92A3F4-6F51-4580-B9BF-71FDAF03EF4F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8449A6D4-369A-42D8-98CB-292381113E87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8449A6D4-369A-42D8-98CB-292381113E87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8449A6D4-369A-42D8-98CB-292381113E87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8449A6D4-369A-42D8-98CB-292381113E87}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
