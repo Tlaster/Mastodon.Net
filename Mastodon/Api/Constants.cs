@@ -21,7 +21,7 @@ namespace Mastodon.Api
         public const string AccountsBlock = Version + "/accounts/{0}/block";
         public const string AccountsUnBlock = Version + "/accounts/{0}/unblock";
         public const string AccountsMute = Version + "/accounts/{0}/mute";
-        public const string AccountUnMute = Version + "/accounts/{0}/unmute";
+        public const string AccountsUnMute = Version + "/accounts/{0}/unmute";
         public const string AccountsRelationships = Version + "/accounts/relationships";
         public const string AccountsSearch = Version + "/accounts/search";
 

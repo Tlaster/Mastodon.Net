@@ -8,7 +8,7 @@ using Mastodon.Model.Apps;
 
 namespace Mastodon.Api
 {
-    public class Apps
+    public partial class Apps
     {
         /// <summary>
         /// Read data
@@ -67,28 +67,6 @@ namespace Mastodon.Api
         /// </summary>
         /// <returns><see cref="OAuthModel"/></returns>
         public async Task<OAuthModel> Register() => await Register(Domain, ClientName, Website, RedirectUris, Scopes);
-
-
-        /// <summary>
-        /// Registering an application
-        /// </summary>
-        /// <param name="domain">mastodon instance domain</param>
-        /// <param name="client_name">Name of your application</param>
-        /// <param name="website">(optional) URL to the homepage of your app</param>
-        /// <param name="redirect_uris">Where the user should be redirected after authorization (for no redirect, use <see cref="Constants.NoRedirect"/>)</param>
-        /// <param name="scopes">This can be a space-separated list of the following items: <see cref="SCOPE_READ"/>, <see cref="SCOPE_WRITE"/> and <see cref="SCOPE_FOLLOW"/></param>
-        /// <returns><see cref="OAuthModel"/></returns>
-        public static async Task<OAuthModel> Register(string domain, string client_name, string website = "", string redirect_uris = Constants.NoRedirect, params string[] scopes)
-        {
-            return await HttpHelper.PostAsync<OAuthModel, StringContent>($"{HttpHelper.HTTPS}{domain}{Constants.AppsRegistering}", null,
-                new Dictionary<string, StringContent>
-                {
-                    { nameof(client_name), new StringContent(client_name) },
-                    { nameof(redirect_uris), new StringContent(redirect_uris) },
-                    { nameof(website), new StringContent(website) },
-                    { nameof(scopes), new StringContent(string.Join(" ", scopes)) }
-                });
-        }
 
     }
 }
