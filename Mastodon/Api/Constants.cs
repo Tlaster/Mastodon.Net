@@ -31,7 +31,7 @@ namespace Mastodon.Api
 
         public const string FavouritesFetching = Version + "/favourites";
 
-        public const string FollowRequests = Version + "/follow_requests";
+        public const string FollowRequestsFetching = Version + "/follow_requests";
         public const string FollowRequestsAuthorize = Version + "/follow_requests/{0}/authorize";
         public const string FollowRequestsReject = Version + "/follow_requests/{0}/reject";
 
@@ -76,6 +76,6 @@ namespace Mastodon.Api
 
     internal static class StringExtension
     {
-        public static string ID(this string str, string id) => string.Format(str, id);
+        public static string Id(this string str, string id) => string.Format(str, id);
     }
 }

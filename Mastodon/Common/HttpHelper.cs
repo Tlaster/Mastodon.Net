@@ -17,15 +17,20 @@ namespace Mastodon.Common
     {
         public const string HTTPS = "https://";
         public const string HTTP = "http://";
-        private static string UrlEncode(string url, IEnumerable<KeyValuePair<string, string>> param)
+        private static string UrlEncode(string url, IEnumerable<(string Key, string Value)> param)
             => param != null ? 
-            $"{url}?{string.Join("&", param.Where(kvp => !string.IsNullOrEmpty(kvp.Value) && (!int.TryParse(kvp.Value, out int intValue) || intValue > 0) && (!bool.TryParse(kvp.Value, out bool boolValue) || boolValue)).Select(kvp => $"{kvp.Key}={kvp.Value}"))}" : 
+            $"{url}?{string.Join("&", param.Where(CheckForValue).Select(kvp => $"{kvp.Key}={kvp.Value}"))}" : 
             url;
 
-        public static IEnumerable<KeyValuePair<string, string>> ArrayEncode<T>(string paramName, params T[] values)
+        private static bool CheckForValue<T>((string Key, T Value) kvp)
+        {
+            return !string.IsNullOrEmpty(kvp.Value.ToString()) && (!int.TryParse(kvp.Value.ToString(), out int intValue) || intValue > 0) && (!bool.TryParse(kvp.Value.ToString(), out bool boolValue) || boolValue);
+        }
+
+        public static IEnumerable<(string, T)> ArrayEncode<T>(string paramName, params T[] values)
         {
             paramName = $"{paramName}[]";
-            return values.Select(value => new KeyValuePair<string, string>(paramName, value.ToString()));
+            return values.Select(value => (paramName, value));
         }
 
         private static HttpClient GetHttpClient(string token, string tokenType = "Bearer") => string.IsNullOrEmpty(token)
@@ -35,14 +40,26 @@ namespace Mastodon.Common
                 DefaultRequestHeaders = {Authorization = new AuthenticationHeaderValue(tokenType, token)}
             };
 
-        public static async Task<string> GetAsync(string url, string token, IEnumerable<KeyValuePair<string, string>> param)
+        public static async Task<string> GetAsync(string url, string token, IEnumerable<(string Key, string Value)> param)
         {
             using (var client = GetHttpClient(token))
                 return CheckForError(await client.GetStringAsync(UrlEncode(url, param)));
         }
-        public static async Task<T> GetAsync<T>(string url, string token, IEnumerable<KeyValuePair<string, string>> param) => JsonConvert.DeserializeObject<T>(await GetAsync(url, token, param));
+        public static async Task<T> GetAsync<T>(string url, string token, IEnumerable<(string Key, string Value)> param) => JsonConvert.DeserializeObject<T>(await GetAsync(url, token, param));
 
-        public static async Task<ArrayModel<T>> GetArrayAsync<T>(string url, string token, IEnumerable<KeyValuePair<string, string>> param)
+        public static async Task<ArrayModel<T>> GetArrayAsync<T>(string url, string token, int max_id = 0, int since_id = 0, params (string Key, string Value)[] param)
+        {
+            var p = new List<(string Key, string Value)>
+            {
+                (nameof(max_id), max_id.ToString()),
+                (nameof(since_id), since_id.ToString())
+            };
+            if (param != null)
+                p.AddRange(param.Select(item => (item.Key, item.Value)));
+            return await GetArrayAsync<T>(url, token, p);
+        }
+
+        public static async Task<ArrayModel<T>> GetArrayAsync<T>(string url, string token, IEnumerable<(string Key, string Value)> param)
         {
             using (var client = GetHttpClient(token))
             using (var res = await client.GetAsync(UrlEncode(url, param)))
@@ -60,36 +77,31 @@ namespace Mastodon.Common
             }
         }
 
-        public static async Task<TModel> PostAsync<TModel, TValue>(string url, string token, IEnumerable<KeyValuePair<string, TValue>> param)
-            where TValue : HttpContent => JsonConvert.DeserializeObject<TModel>(await PostAsync(url, token, param));
+        public static async Task<TModel> PostAsync<TModel, TValue>(string url, string token, IEnumerable<(string Key, TValue Value)> param)
+             => JsonConvert.DeserializeObject<TModel>(await PostAsync(url, token, param));
 
-        public static async Task<string> PostAsync<TValue>(string url, string token, IEnumerable<KeyValuePair<string, TValue>> param)
-            where TValue : HttpContent
+        public static async Task<string> PostAsync<TValue>(string url, string token, IEnumerable<(string Key, TValue Value)> param)
         {
             using (var client = GetHttpClient(token))
             {
                 if (param == null)
-                    param = new Dictionary<string, TValue>();
-                if (param.Select(p => p.Value).Any(item => item is StreamContent))
+                    param = new List<(string Key, TValue Value)>();
+                if (param.Select(p => p.Value).Any(item => item is HttpContent))
                 {
                     using (var formData = new MultipartFormDataContent())
                     {
                         foreach (var item in param)
-                            formData.Add(item.Value, item.Key);
+                            if (CheckForValue(item))
+                                formData.Add(item.Value as HttpContent, item.Key);
                         using (var res = await client.PostAsync(url, formData))
                             return CheckForError(await res.Content.ReadAsStringAsync());
                     }
                 }
-                else
-                {
-                    client.Timeout = TimeSpan.FromSeconds(30);
-                    var items = new Dictionary<string, string>();
-                    foreach (var item in param)
-                        items.Add(item.Key, await item.Value.ReadAsStringAsync());
-                    using (var formData = new FormUrlEncodedContent(items))
-                    using (var res = await client.PostAsync(url, formData))
-                        return CheckForError(await res.Content.ReadAsStringAsync());
-                }
+                client.Timeout = TimeSpan.FromSeconds(30);
+                var items = param.Where(CheckForValue).ToDictionary(item => item.Key, item => item.Value.ToString());
+                using (var formData = new FormUrlEncodedContent(items))
+                using (var res = await client.PostAsync(url, formData))
+                    return CheckForError(await res.Content.ReadAsStringAsync());
             }
         }
 
@@ -102,7 +114,7 @@ namespace Mastodon.Common
                 return CheckForError(await response.Content.ReadAsStringAsync());
         }
 
-        public static async Task<string> PatchAsync<TValue>(string url, string token, IEnumerable<KeyValuePair<string, TValue>> param)
+        public static async Task<string> PatchAsync<TValue>(string url, string token, IEnumerable<(string Key, TValue Value)> param)
             where TValue : HttpContent
         {
             using (var formData = new MultipartFormDataContent())

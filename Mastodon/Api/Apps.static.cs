@@ -21,14 +21,13 @@ namespace Mastodon.Api
         /// <returns><see cref="OAuthModel"/></returns>
         public static async Task<OAuthModel> Register(string domain, string client_name, string website = "", string redirect_uris = Constants.NoRedirect, params string[] scopes)
         {
-            return await HttpHelper.PostAsync<OAuthModel, StringContent>($"{HttpHelper.HTTPS}{domain}{Constants.AppsRegistering}", null,
-                new Dictionary<string, StringContent>
-                {
-                    { nameof(client_name), new StringContent(client_name) },
-                    { nameof(redirect_uris), new StringContent(redirect_uris) },
-                    { nameof(website), new StringContent(website) },
-                    { nameof(scopes), new StringContent(string.Join(" ", scopes)) }
-                });
+            return await HttpHelper.PostAsync<OAuthModel, string>($"{HttpHelper.HTTPS}{domain}{Constants.AppsRegistering}", null, new[]
+            {
+                ( nameof(client_name), client_name ),
+                ( nameof(redirect_uris), redirect_uris ),
+                ( nameof(website), website ),
+                ( nameof(scopes), string.Join(" ", scopes) )
+            });
         }
     }
 }
