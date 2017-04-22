@@ -21,7 +21,7 @@ namespace Mastodon.Api
                 ( nameof(code), code)
             });
         }
-        public static async Task<TokenModel> GetAccessTokenByPassword(string domain, string client_id, string client_secret, string redirect_uri, string username, string password)
+        public static async Task<TokenModel> GetAccessTokenByPassword(string domain, string client_id, string client_secret, string redirect_uri, string username, string password, params string[] scope)
         {
             return await HttpHelper.PostAsync<TokenModel, string>($"{HttpHelper.HTTPS}{domain}{Constants.OAuthToken}", null, new[]
             {
@@ -30,7 +30,8 @@ namespace Mastodon.Api
                 ( nameof(redirect_uri), redirect_uri ),
                 ( "grant_type", "password" ),
                 ( nameof(username), username ),
-                ( nameof(password), password )
+                ( nameof(password), password ),
+                ( nameof(scope), string.Join(" ", scope) )
             });
         }
     }

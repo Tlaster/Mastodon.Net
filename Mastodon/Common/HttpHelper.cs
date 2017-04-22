@@ -136,6 +136,10 @@ namespace Mastodon.Common
         {
             if (string.IsNullOrEmpty(json))
                 return json;
+            if (json.StartsWith("<html>"))
+            {
+                throw new MastodonException("Return json is not valid");
+            }
             try
             {
                 var jobj = JsonConvert.DeserializeObject<JObject>(json);
