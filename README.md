@@ -1,5 +1,5 @@
 # Mastodon.Net
-.Net wrapper for [Mastodon](https://github.com/tootsuite/mastodon) Api  
+.Net wrapper(.Net Standard 1.4) for [Mastodon](https://github.com/tootsuite/mastodon) Api  
 
 # Getting Start  
 [![NuGet](https://img.shields.io/badge/NuGet%20-1.0.0-blue.svg)](https://www.nuget.org/packages/Mastodon.Net/)
