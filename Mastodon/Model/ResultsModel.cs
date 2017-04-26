@@ -11,18 +11,18 @@ namespace Mastodon.Model
         /// An array of matched <see cref="AccountModel"/>
         /// </summary>
         [JsonProperty("accounts")]
-        public AccountModel[] Accounts { get; set; }
+        public List<AccountModel> Accounts { get; set; }
 
         /// <summary>
         /// An array of matchhed <see cref="Statuses"/>
         /// </summary>
         [JsonProperty("statuses")]
-        public StatusModel[] Statuses { get; set; }
+        public List<StatusModel> Statuses { get; set; }
 
         /// <summary>
         /// An array of matched hashtags, as strings
         /// </summary>
         [JsonProperty("hashtags")]
-        public string[] Hashtags { get; set; }
+        public List<string> Hashtags { get; set; }
     }
 }

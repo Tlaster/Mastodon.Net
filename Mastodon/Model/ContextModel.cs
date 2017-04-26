@@ -11,12 +11,12 @@ namespace Mastodon.Model
         /// The ancestors of the status in the conversation, as a list of <see cref="StatusModel"/>
         /// </summary>
         [JsonProperty("ancestors")]
-        public StatusModel[] Ancestors { get; set; }
+        public List<StatusModel> Ancestors { get; set; }
 
         /// <summary>
         /// The descendants of the status in the conversation, as a list of <see cref="StatusModel"/>
         /// </summary>
         [JsonProperty("descendants")]
-        public StatusModel[] Descendants { get; set; }
+        public List<StatusModel> Descendants { get; set; }
     }
 }

@@ -29,6 +29,7 @@ namespace Sample
 
             var timeline = await Timelines.Home(domain, token.AccessToken);
             var notify = await Notifications.Fetching(domain, token.AccessToken);
+            var toot = await Statuses.Posting(domain, token.AccessToken, "Toot!");
             Console.ReadKey();
         }
     }

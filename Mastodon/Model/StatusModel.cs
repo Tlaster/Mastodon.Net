@@ -71,19 +71,19 @@ namespace Mastodon.Model
         /// An array of <see cref="AttachmentModel"/>
         /// </summary>
         [JsonProperty("media_attachments")]
-        public AttachmentModel[] MediaAttachments { get; set; }
+        public List<AttachmentModel> MediaAttachments { get; set; }
 
         /// <summary>
         /// An array of <see cref="MentionModel"/>
         /// </summary>
         [JsonProperty("mentions")]
-        public MentionModel[] Mentions { get; set; }
+        public List<MentionModel> Mentions { get; set; }
 
         /// <summary>
         /// An array of <see cref="TagModel"/>
         /// </summary>
         [JsonProperty("tags")]
-        public TagModel[] Tags { get; set; }
+        public List<TagModel> Tags { get; set; }
 
         /// <summary>
         /// A Fediverse-unique resource ID
