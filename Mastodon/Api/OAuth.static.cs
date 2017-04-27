@@ -10,7 +10,7 @@ namespace Mastodon.Api
 {
     public partial class OAuth
     {
-        public static async Task<TokenModel> GetAccessTokenByCode(string domain, string client_id, string client_secret, string redirect_uri, string code)
+        public static async Task<TokenModel> GetAccessTokenByCode(string domain, string client_id, string client_secret, string redirect_uri, string code, params string[] scope)
         {
             return await HttpHelper.PostAsync<TokenModel, string>($"{HttpHelper.HTTPS}{domain}{Constants.OAuthToken}", null, new []
             {
@@ -18,7 +18,8 @@ namespace Mastodon.Api
                 ( nameof(client_secret), client_secret ),
                 ( nameof(redirect_uri), redirect_uri ),
                 ( "grant_type", "authorization_code" ),
-                ( nameof(code), code)
+                ( nameof(code), code),
+                ( nameof(scope), string.Join(" ", scope) )
             });
         }
         public static async Task<TokenModel> GetAccessTokenByPassword(string domain, string client_id, string client_secret, string redirect_uri, string username, string password, params string[] scope)

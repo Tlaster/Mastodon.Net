@@ -64,16 +64,27 @@ namespace Mastodon.Common
             using (var client = GetHttpClient(token))
             using (var res = await client.GetAsync(UrlEncode(url, param)))
             {
-                res.Headers.TryGetValues("Link", out IEnumerable<string> values);
-                var links = values.FirstOrDefault().Split(',').Select(s => Regex.Match(s, "<.*(max_id|since_id)=([0-9]*)>; rel=\"(.*)\"").Groups).ToList();
-                int.TryParse(links.FirstOrDefault(m => m[1].Value == "max_id")[2].Value, out int maxId);
-                int.TryParse(links.FirstOrDefault(m => m[1].Value == "since_id")[2].Value, out int sinceId);
-                return new ArrayModel<T>
+                if (res.Headers.TryGetValues("Link", out IEnumerable<string> values))
                 {
-                    MaxId = maxId,
-                    SinceId = sinceId,
-                    Result = JsonConvert.DeserializeObject<List<T>>(await res.Content.ReadAsStringAsync())
-                };
+                    var links = values.FirstOrDefault().Split(',').Select(s => Regex.Match(s, "<.*(max_id|since_id)=([0-9]*)>; rel=\"(.*)\"").Groups).ToList();
+                    int.TryParse(links.FirstOrDefault(m => m[1].Value == "max_id")[2].Value, out int maxId);
+                    int.TryParse(links.FirstOrDefault(m => m[1].Value == "since_id")[2].Value, out int sinceId);
+                    return new ArrayModel<T>
+                    {
+                        MaxId = maxId,
+                        SinceId = sinceId,
+                        Result = JsonConvert.DeserializeObject<List<T>>(await res.Content.ReadAsStringAsync())
+                    };
+                }
+                else
+                {
+                    return new ArrayModel<T>
+                    {
+                        MaxId = 0,
+                        SinceId = 0,
+                        Result = JsonConvert.DeserializeObject<List<T>>(await res.Content.ReadAsStringAsync())
+                    };
+                }
             }
         }
 
@@ -91,7 +102,9 @@ namespace Mastodon.Common
                     using (var formData = new MultipartFormDataContent())
                     {
                         foreach (var item in param)
-                            if (CheckForValue(item))
+                            if (item.Value is StreamContent)
+                                formData.Add(item.Value as StreamContent, item.Key, "file");
+                            else if (CheckForValue(item))
                                 formData.Add(item.Value as HttpContent, item.Key);
                         using (var res = await client.PostAsync(url, formData))
                             return CheckForError(await res.Content.ReadAsStringAsync());
