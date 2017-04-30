@@ -55,7 +55,7 @@ namespace Mastodon.Common
                 (nameof(since_id), since_id.ToString())
             };
             if (param != null)
-                p.AddRange(param.Select(item => (item.Key, item.Value)));
+                p.AddRange(param);
             return await GetArrayAsync<T>(url, token, p);
         }
 
@@ -111,7 +111,7 @@ namespace Mastodon.Common
                     }
                 }
                 client.Timeout = TimeSpan.FromSeconds(30);
-                var items = param.Where(CheckForValue).ToDictionary(item => item.Key, item => item.Value.ToString());
+                var items = param.Where(CheckForValue).Select(item => new KeyValuePair<string, string>(item.Key, item.Value.ToString()));
                 using (var formData = new FormUrlEncodedContent(items))
                 using (var res = await client.PostAsync(url, formData))
                     return CheckForError(await res.Content.ReadAsStringAsync());
