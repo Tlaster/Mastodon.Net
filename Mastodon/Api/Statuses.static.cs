@@ -15,60 +15,55 @@ namespace Mastodon.Api
         /// Fetching a status
         /// </summary>
         /// <param name="domain"></param>
-        /// <param name="token"></param>
         /// <param name="id"></param>
         /// <returns>Returns a <see cref="StatusModel"/></returns>
-        public static async Task<StatusModel> Fetching(string domain, string token, int id)
+        public static async Task<StatusModel> Fetching(string domain, int id)
         {
-            return await HttpHelper.GetAsync<StatusModel>($"{HttpHelper.HTTPS}{domain}{Constants.StatusesFetching.Id(id.ToString())}", token, null);
+            return await HttpHelper.GetAsync<StatusModel>($"{HttpHelper.HTTPS}{domain}{Constants.StatusesFetching.Id(id.ToString())}", string.Empty, null);
         }
 
         /// <summary>
         /// Getting status context
         /// </summary>
         /// <param name="domain"></param>
-        /// <param name="token"></param>
         /// <param name="id"></param>
         /// <returns>Returns a <see cref="ContextModel"/></returns>
-        public static async Task<ContextModel> Context(string domain, string token, int id)
+        public static async Task<ContextModel> Context(string domain, int id)
         {
-            return await HttpHelper.GetAsync<ContextModel>($"{HttpHelper.HTTPS}{domain}{Constants.StatusesContext.Id(id.ToString())}", token, null);
+            return await HttpHelper.GetAsync<ContextModel>($"{HttpHelper.HTTPS}{domain}{Constants.StatusesContext.Id(id.ToString())}", string.Empty, null);
         }
 
         /// <summary>
         /// Getting a card associated with a status
         /// </summary>
         /// <param name="domain"></param>
-        /// <param name="token"></param>
         /// <param name="id"></param>
         /// <returns>Returns a <see cref="CardModel"/></returns>
-        public static async Task<CardModel> Card(string domain, string token, int id)
+        public static async Task<CardModel> Card(string domain, int id)
         {
-            return await HttpHelper.GetAsync<CardModel>($"{HttpHelper.HTTPS}{domain}{Constants.StatusesCard.Id(id.ToString())}", token, null);
+            return await HttpHelper.GetAsync<CardModel>($"{HttpHelper.HTTPS}{domain}{Constants.StatusesCard.Id(id.ToString())}", string.Empty, null);
         }
 
         /// <summary>
         /// Getting who reblogged a status
         /// </summary>
         /// <param name="domain"></param>
-        /// <param name="token"></param>
         /// <param name="id"></param>
         /// <returns>Returns an array of <see cref="AccountModel"/></returns>
-        public static async Task<AccountModel> RebloggedBy(string domain, string token, int id)
+        public static async Task<AccountModel> RebloggedBy(string domain, int id)
         {
-            return await HttpHelper.GetAsync<AccountModel>($"{HttpHelper.HTTPS}{domain}{Constants.StatusesRebloggedBy.Id(id.ToString())}", token, null);
+            return await HttpHelper.GetAsync<AccountModel>($"{HttpHelper.HTTPS}{domain}{Constants.StatusesRebloggedBy.Id(id.ToString())}", string.Empty, null);
         }
 
         /// <summary>
         /// Getting who favourited a status
         /// </summary>
         /// <param name="domain"></param>
-        /// <param name="token"></param>
         /// <param name="id"></param>
         /// <returns>Returns an array of <see cref="AccountModel"/></returns>
-        public static async Task<AccountModel> FavouritedBy(string domain, string token, int id)
+        public static async Task<AccountModel> FavouritedBy(string domain, int id)
         {
-            return await HttpHelper.GetAsync<AccountModel>($"{HttpHelper.HTTPS}{domain}{Constants.StatusesFavouritedBy.Id(id.ToString())}", token, null);
+            return await HttpHelper.GetAsync<AccountModel>($"{HttpHelper.HTTPS}{domain}{Constants.StatusesFavouritedBy.Id(id.ToString())}", string.Empty, null);
         }
 
         /// <summary>

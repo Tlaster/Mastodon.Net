@@ -24,7 +24,7 @@ namespace Mastodon.Api
         /// <returns>Returns a <see cref="StatusModel"/></returns>
         public async Task<StatusModel> Fetching(int id)
         {
-            return await Fetching(Domain, AccessToken, id);
+            return await Fetching(Domain, id);
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace Mastodon.Api
         /// <returns>Returns a <see cref="ContextModel"/></returns>
         public async Task<ContextModel> Context(int id)
         {
-            return await Context(Domain, AccessToken, id);
+            return await Context(Domain, id);
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Mastodon.Api
         /// <returns>Returns a <see cref="CardModel"/></returns>
         public async Task<CardModel> Card(int id)
         {
-            return await Card(Domain, AccessToken, id);
+            return await Card(Domain, id);
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Mastodon.Api
         /// <returns>Returns an array of <see cref="AccountModel"/></returns>
         public async Task<AccountModel> RebloggedBy(int id)
         {
-            return await RebloggedBy(Domain, AccessToken, id);
+            return await RebloggedBy(Domain, id);
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace Mastodon.Api
         /// <returns>Returns an array of <see cref="AccountModel"/></returns>
         public async Task<AccountModel> FavouritedBy(int id)
         {
-            return await FavouritedBy(Domain, AccessToken, id);
+            return await FavouritedBy(Domain, id);
         }
 
         /// <summary>

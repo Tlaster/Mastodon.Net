@@ -17,14 +17,14 @@ namespace Mastodon.Api
             return await HttpHelper.GetArrayAsync<StatusModel>($"{HttpHelper.HTTPS}{domain}{Constants.TimelineHome}", token, max_id, since_id);
         }
 
-        public static async Task<ArrayModel<StatusModel>> Public(string domain, string token, int max_id = 0, int since_id = 0, bool local = false)
+        public static async Task<ArrayModel<StatusModel>> Public(string domain, int max_id = 0, int since_id = 0, bool local = false)
         {
-            return await HttpHelper.GetArrayAsync<StatusModel>($"{HttpHelper.HTTPS}{domain}{Constants.TimelinePublic}", token, max_id, since_id, (nameof(local), local.ToString()));
+            return await HttpHelper.GetArrayAsync<StatusModel>($"{HttpHelper.HTTPS}{domain}{Constants.TimelinePublic}", string.Empty, max_id, since_id, (nameof(local), local.ToString()));
         }
 
-        public static async Task<ArrayModel<StatusModel>> HashTag(string domain, string token, string hashtag, int max_id = 0, int since_id = 0, bool local = false)
+        public static async Task<ArrayModel<StatusModel>> HashTag(string domain, string hashtag, int max_id = 0, int since_id = 0, bool local = false)
         {
-            return await HttpHelper.GetArrayAsync<StatusModel>($"{HttpHelper.HTTPS}{domain}{Constants.TimelineTag.Id(hashtag)}", token, max_id, since_id, (nameof(local), local.ToString()));
+            return await HttpHelper.GetArrayAsync<StatusModel>($"{HttpHelper.HTTPS}{domain}{Constants.TimelineTag.Id(hashtag)}", string.Empty, max_id, since_id, (nameof(local), local.ToString()));
         }
     }
 }

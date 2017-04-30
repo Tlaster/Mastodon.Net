@@ -9,7 +9,7 @@ namespace Mastodon.Api
 {
     public partial class Search : Base
     {
-        public Search(string domain, string accessToken) : base(domain, accessToken)
+        public Search(string domain) : base(domain, string.Empty)
         {
         }
 
@@ -21,7 +21,7 @@ namespace Mastodon.Api
         /// <returns>Returns <see cref="ResultsModel"/>. If <see cref="q"/> is a URL, Mastodon will attempt to fetch the provided account or status. Otherwise, it will do a local account and hashtag search</returns>
         public async Task<ResultsModel> Searching(string q, bool resolve = false)
         {
-            return await Searching(Domain, AccessToken, q, resolve);
+            return await Searching(Domain, q, resolve);
         }
     }
 }
