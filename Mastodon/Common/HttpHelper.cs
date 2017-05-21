@@ -67,8 +67,8 @@ namespace Mastodon.Common
                 if (res.Headers.TryGetValues("Link", out IEnumerable<string> values))
                 {
                     var links = values.FirstOrDefault().Split(',').Select(s => Regex.Match(s, "<.*(max_id|since_id)=([0-9]*)(.*)>; rel=\"(.*)\"").Groups).ToList();
-                    int.TryParse(links.FirstOrDefault(m => m[1].Value == "max_id")[2].Value, out int maxId);
-                    int.TryParse(links.FirstOrDefault(m => m[1].Value == "since_id")[2].Value, out int sinceId);
+                    int.TryParse(links.FirstOrDefault(m => m[1].Value == "max_id")?[2]?.Value, out int maxId);
+                    int.TryParse(links.FirstOrDefault(m => m[1].Value == "since_id")?[2]?.Value, out int sinceId);
                     return new ArrayModel<T>
                     {
                         MaxId = maxId,
