@@ -1,30 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
+﻿using System.Net.Http;
 using System.Threading.Tasks;
 using Mastodon.Common;
 using Mastodon.Model;
 
 namespace Mastodon.Api
 {
-    public partial class FollowRequests
+    public class FollowRequests
     {
         /// <summary>
-        /// Fetching a list of follow requests
+        ///     Fetching a list of follow requests
         /// </summary>
         /// <param name="domain">Mastodon instance domain</param>
         /// <param name="token">AccessToken</param>
         /// <param name="max_id"></param>
         /// <param name="since_id"></param>
-        /// <returns>Returns an array of <see cref="AccountModel"/> which have requested to follow the authenticated user</returns>
-        public static async Task<ArrayModel<AccountModel>> Fetching(string domain, string token, int max_id = 0, int since_id = 0)
+        /// <returns>Returns an array of <see cref="AccountModel" /> which have requested to follow the authenticated user</returns>
+        public static async Task<MastodonList<Account>> Fetching(string domain, string token, int max_id = 0,
+            int since_id = 0)
         {
-            return await HttpHelper.GetArrayAsync<AccountModel>($"{HttpHelper.HTTPS}{domain}{Constants.FollowRequestsFetching}", token, max_id, since_id);
+            return await HttpHelper.GetArrayAsync<Account>(
+                $"{HttpHelper.HTTPS}{domain}{Constants.FollowRequestsFetching}", token, max_id, since_id);
         }
 
         /// <summary>
-        /// Authorizing follow requests
+        ///     Authorizing follow requests
         /// </summary>
         /// <param name="domain">Mastodon instance domain</param>
         /// <param name="token">AccessToken</param>
@@ -32,11 +31,12 @@ namespace Mastodon.Api
         /// <returns></returns>
         public static async Task Authorize(string domain, string token, int id)
         {
-            await HttpHelper.PostAsync<HttpContent>($"{HttpHelper.HTTPS}{domain}{Constants.FollowRequestsAuthorize.Id(id.ToString())}", token, null);
+            await HttpHelper.PostAsync<HttpContent>(
+                $"{HttpHelper.HTTPS}{domain}{Constants.FollowRequestsAuthorize.Id(id.ToString())}", token, null);
         }
 
         /// <summary>
-        /// Rejecting follow requests
+        ///     Rejecting follow requests
         /// </summary>
         /// <param name="domain">Mastodon instance domain</param>
         /// <param name="token">AccessToken</param>
@@ -44,10 +44,8 @@ namespace Mastodon.Api
         /// <returns></returns>
         public static async Task Reject(string domain, string token, int id)
         {
-            await HttpHelper.PostAsync<HttpContent>($"{HttpHelper.HTTPS}{domain}{Constants.FollowRequestsReject.Id(id.ToString())}", token, null);
+            await HttpHelper.PostAsync<HttpContent>(
+                $"{HttpHelper.HTTPS}{domain}{Constants.FollowRequestsReject.Id(id.ToString())}", token, null);
         }
-
-
-
     }
 }

@@ -1,33 +1,39 @@
-﻿using Mastodon.Common;
-using Mastodon.Model.Apps;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Mastodon.Common;
+using Mastodon.Model;
 
 namespace Mastodon.Api
 {
-    public partial class Apps
+    public class Apps
     {
         /// <summary>
-        /// Registering an application
+        ///     Registering an application
         /// </summary>
         /// <param name="domain">mastodon instance domain</param>
         /// <param name="client_name">Name of your application</param>
         /// <param name="website">(optional) URL to the homepage of your app</param>
-        /// <param name="redirect_uris">Where the user should be redirected after authorization (for no redirect, use <see cref="Constants.NoRedirect"/>)</param>
-        /// <param name="scopes">This can be a space-separated list of the following items: <see cref="SCOPE_READ"/>, <see cref="SCOPE_WRITE"/> and <see cref="SCOPE_FOLLOW"/></param>
-        /// <returns><see cref="OAuthModel"/></returns>
-        public static async Task<OAuthModel> Register(string domain, string client_name, string website = "", string redirect_uris = Constants.NoRedirect, params string[] scopes)
+        /// <param name="redirect_uris">
+        ///     Where the user should be redirected after authorization (for no redirect, use
+        ///     <see cref="Constants.NoRedirect" />)
+        /// </param>
+        /// <param name="scopes">
+        ///     This can be a space-separated list of the following items: <see cref="SCOPE_READ" />,
+        ///     <see cref="SCOPE_WRITE" /> and <see cref="SCOPE_FOLLOW" />
+        /// </param>
+        /// <returns>
+        ///     <see cref="OAuthModel" />
+        /// </returns>
+        public static async Task<OAuth> Register(string domain, string client_name, string website = "",
+            string redirect_uris = Constants.NoRedirect, params Scope[] scopes)
         {
-            return await HttpHelper.PostAsync<OAuthModel, string>($"{HttpHelper.HTTPS}{domain}{Constants.AppsRegistering}", null, new[]
-            {
-                ( nameof(client_name), client_name ),
-                ( nameof(redirect_uris), redirect_uris ),
-                ( nameof(website), website ),
-                ( nameof(scopes), string.Join(" ", scopes) )
-            });
+            return await HttpHelper.PostAsync<OAuth, string>($"{HttpHelper.HTTPS}{domain}{Constants.AppsRegistering}",
+                null, new[]
+                {
+                    (nameof(client_name), client_name),
+                    (nameof(redirect_uris), redirect_uris),
+                    (nameof(website), website),
+                    (nameof(scopes), string.Join(" ", scopes))
+                });
         }
     }
 }

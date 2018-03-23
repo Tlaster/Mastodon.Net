@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Sockets;
-using System.Runtime.InteropServices.ComTypes;
-using System.Text;
-
-namespace Mastodon.Api
+﻿namespace Mastodon.Api
 {
     internal sealed class Constants
     {
@@ -76,6 +70,9 @@ namespace Mastodon.Api
 
     internal static class StringExtension
     {
-        public static string Id(this string str, string id) => string.Format(str, id);
+        public static string Id(this string str, string id)
+        {
+            return string.Format(str, id);
+        }
     }
 }
