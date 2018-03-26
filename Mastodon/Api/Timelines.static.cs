@@ -7,7 +7,7 @@ namespace Mastodon.Api
     /// <summary>
     ///     Retrieving a timeline
     /// </summary>
-    internal class Timelines
+    public static class Timelines
     {
         public static async Task<MastodonList<Status>> Home(string domain, string token, long max_id = 0,
             long since_id = 0, bool only_media = false, int limit = 20)
