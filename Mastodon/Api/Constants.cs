@@ -22,6 +22,7 @@
         public const string AppsRegistering = Version + "/apps";
 
         public const string BlocksFetching = Version + "/blocks";
+        public const string BlocksDomain = Version + "/domain_blocks";
 
         public const string FavouritesFetching = Version + "/favourites";
 
@@ -33,6 +34,13 @@
 
         public const string Instance = Version + "/instance";
 
+        public const string CustomEmojis = Version + "/custom_emojis";
+
+        public const string List = Version + "/lists";
+        public const string ListsByMembership = "/accounts/{0}/lists";
+        public const string AccountsInList = "/lists/{0}/accounts";
+        public const string ListById = Version + "/lists/{0}";
+
         public const string MediaUploading = Version + "/media";
 
         public const string MutesFetching = Version + "/mutes";
@@ -40,6 +48,7 @@
         public const string NotificationsFetching = Version + "/notifications";
         public const string NotificationsSingle = Version + "/notifications/{0}";
         public const string NotificationsClear = Version + "/notifications/clear";
+        public const string NotificationsDismiss = Version + "/notifications/dismiss";
 
         public const string ReportsFetching = Version + "/reports";
         public const string ReportsReporting = Version + "/reports";
@@ -57,10 +66,15 @@
         public const string StatusesUnReblog = Version + "/statuses/{0}/unreblog";
         public const string StatusesFavourite = Version + "/statuses/{0}/favourite";
         public const string StatusesUnFavourite = Version + "/statuses/{0}/unfavourite";
+        public const string StatusesPin = Version + "/statuses/{0}/pin";
+        public const string StatusesUnpin = Version + "/statuses/{0}/unpin";
+        public const string StatusesMute = Version + "/statuses/{0}/mute";
+        public const string StatusesUnmute = Version + "/statuses/{0}/unmute";
 
         public const string TimelineHome = Version + "/timelines/home";
         public const string TimelinePublic = Version + "/timelines/public";
         public const string TimelineTag = Version + "/timelines/tag/{0}";
+        public const string TimelineList = Version + "/timelines/list/{0}";
 
         public const string OAuthAuthorize = "/oauth/authorize";
         public const string OAuthToken = "/oauth/token";

@@ -14,12 +14,14 @@ namespace Mastodon.Api
         /// <param name="token"></param>
         /// <param name="max_id"></param>
         /// <param name="since_id"></param>
-        /// <returns>Returns a list of <see cref="NotificationModel" /> for the authenticated user</returns>
-        public static async Task<MastodonList<Notification>> Fetching(string domain, string token, int max_id = 0,
-            int since_id = 0)
+        /// <returns>Returns a list of <see cref="Notification" /> for the authenticated user</returns>
+        public static async Task<MastodonList<Notification>> Fetching(string domain, string token, long max_id = 0,
+            long since_id = 0, int limit = 15, NotificationType? exclude_types = null)
         {
-            return await HttpHelper.GetArrayAsync<Notification>(
-                $"{HttpHelper.HTTPS}{domain}{Constants.NotificationsFetching}", token, max_id, since_id);
+            return await HttpHelper.GetListAsync<Notification>(
+                $"{HttpHelper.HTTPS}{domain}{Constants.NotificationsFetching}", token, max_id, since_id,
+                (nameof(limit), limit.ToString()),
+                (nameof(exclude_types), exclude_types?.ToString("F")?.ToLower()));
         }
 
         /// <summary>
@@ -28,8 +30,8 @@ namespace Mastodon.Api
         /// <param name="domain"></param>
         /// <param name="token"></param>
         /// <param name="id"></param>
-        /// <returns>Returns the <see cref="NotificationModel" />.</returns>
-        public static async Task<Notification> GetSingle(string domain, string token, int id)
+        /// <returns>Returns the <see cref="Notification" />.</returns>
+        public static async Task<Notification> GetSingle(string domain, string token, long id)
         {
             return await HttpHelper.GetAsync<Notification>(
                 $"{HttpHelper.HTTPS}{domain}{Constants.NotificationsSingle.Id(id.ToString())}", token, null);
@@ -45,6 +47,12 @@ namespace Mastodon.Api
         {
             await HttpHelper.PostAsync<HttpContent>($"{HttpHelper.HTTPS}{domain}{Constants.NotificationsClear}", token,
                 null);
+        }
+
+        public static async Task Dismiss(string domain, string token, long id)
+        {
+            await HttpHelper.PostAsync($"{HttpHelper.HTTPS}{domain}{Constants.NotificationsDismiss}", token,
+                (nameof(id), id));
         }
     }
 }

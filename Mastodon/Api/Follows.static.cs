@@ -12,14 +12,11 @@ namespace Mastodon.Api
         /// <param name="domain">Mastodon instance domain</param>
         /// <param name="token">AccessToken</param>
         /// <param name="uri">username@domain of the person you want to follow</param>
-        /// <returns>Returns the local representation of the followed account, as an <see cref="AccountModel" /></returns>
+        /// <returns>Returns the local representation of the followed account, as an <see cref="Account" /></returns>
         public static async Task<Account> Following(string domain, string token, string uri)
         {
             return await HttpHelper.PostAsync<Account, string>(
-                $"{HttpHelper.HTTPS}{domain}{Constants.FollowsFollowing}", token, new[]
-                {
-                    (nameof(uri), uri)
-                });
+                $"{HttpHelper.HTTPS}{domain}{Constants.FollowsFollowing}", token, (nameof(uri), uri));
         }
     }
 }

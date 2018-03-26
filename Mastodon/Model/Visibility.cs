@@ -7,4 +7,12 @@
         Private,
         Direct
     }
+
+    public enum NotificationType
+    {
+        Follow,
+        Favourite,
+        Reblog,
+        Mention
+    }
 }

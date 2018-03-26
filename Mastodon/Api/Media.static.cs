@@ -14,14 +14,14 @@ namespace Mastodon.Api
         /// <param name="domain">Mastodon instance domain</param>
         /// <param name="token">AccessToken</param>
         /// <param name="file">Media to be uploaded</param>
-        /// <returns>Returns an <see cref="AttachmentModel" /> that can be used when creating a status</returns>
-        public static async Task<Attachment> Uploading(string domain, string token, byte[] file)
+        /// <returns>Returns an <see cref="Attachment" /> that can be used when creating a status</returns>
+        public static async Task<Attachment> Uploading(string domain, string token, byte[] file,
+            string description = null)
         {
-            return await HttpHelper.PostAsync<Attachment, StreamContent>(
-                $"{HttpHelper.HTTPS}{domain}{Constants.MediaUploading}", token, new[]
-                {
-                    (nameof(file), new StreamContent(new MemoryStream(file)))
-                });
+            return await HttpHelper.PostAsync<Attachment, HttpContent>(
+                $"{HttpHelper.HTTPS}{domain}{Constants.MediaUploading}", token,
+                (nameof(file), new StreamContent(new MemoryStream(file))),
+                (nameof(description), new StringContent(description)));
         }
     }
 }

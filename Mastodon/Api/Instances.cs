@@ -11,5 +11,13 @@ namespace Mastodon.Api
             return await HttpHelper.GetAsync<Instance>($"{HttpHelper.HTTPS}{domain}{Constants.Instance}", string.Empty,
                 null);
         }
+
+        public static async Task<MastodonList<Emoji>> CustomEmojis(string domain)
+        {
+            return await HttpHelper.GetListAsync<Emoji>($"{HttpHelper.HTTPS}{domain}{Constants.CustomEmojis}",
+                string.Empty);
+        }
+        
+        
     }
 }

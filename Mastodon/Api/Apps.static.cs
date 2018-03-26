@@ -21,19 +21,14 @@ namespace Mastodon.Api
         ///     <see cref="SCOPE_WRITE" /> and <see cref="SCOPE_FOLLOW" />
         /// </param>
         /// <returns>
-        ///     <see cref="OAuthModel" />
+        ///     <see cref="OAuth" />
         /// </returns>
         public static async Task<OAuth> Register(string domain, string client_name, string website = "",
             string redirect_uris = Constants.NoRedirect, params Scope[] scopes)
         {
             return await HttpHelper.PostAsync<OAuth, string>($"{HttpHelper.HTTPS}{domain}{Constants.AppsRegistering}",
-                null, new[]
-                {
-                    (nameof(client_name), client_name),
-                    (nameof(redirect_uris), redirect_uris),
-                    (nameof(website), website),
-                    (nameof(scopes), string.Join(" ", scopes))
-                });
+                null, (nameof(client_name), client_name), (nameof(redirect_uris), redirect_uris),
+                (nameof(website), website), (nameof(scopes), string.Join(" ", scopes)));
         }
     }
 }

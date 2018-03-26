@@ -15,8 +15,8 @@ namespace Mastodon.Api
         /// </summary>
         /// <param name="domain"></param>
         /// <param name="id"></param>
-        /// <returns>Returns a <see cref="StatusModel" /></returns>
-        public static async Task<Status> Fetching(string domain, int id)
+        /// <returns>Returns a <see cref="Status" /></returns>
+        public static async Task<Status> Fetching(string domain, long id)
         {
             return await HttpHelper.GetAsync<Status>(
                 $"{HttpHelper.HTTPS}{domain}{Constants.StatusesFetching.Id(id.ToString())}", string.Empty, null);
@@ -27,8 +27,8 @@ namespace Mastodon.Api
         /// </summary>
         /// <param name="domain"></param>
         /// <param name="id"></param>
-        /// <returns>Returns a <see cref="ContextModel" /></returns>
-        public static async Task<Context> Context(string domain, int id)
+        /// <returns>Returns a <see cref="Context" /></returns>
+        public static async Task<Context> Context(string domain, long id)
         {
             return await HttpHelper.GetAsync<Context>(
                 $"{HttpHelper.HTTPS}{domain}{Constants.StatusesContext.Id(id.ToString())}", string.Empty, null);
@@ -39,8 +39,8 @@ namespace Mastodon.Api
         /// </summary>
         /// <param name="domain"></param>
         /// <param name="id"></param>
-        /// <returns>Returns a <see cref="CardModel" /></returns>
-        public static async Task<Card> Card(string domain, int id)
+        /// <returns>Returns a <see cref="Card" /></returns>
+        public static async Task<Card> Card(string domain, long id)
         {
             return await HttpHelper.GetAsync<Card>(
                 $"{HttpHelper.HTTPS}{domain}{Constants.StatusesCard.Id(id.ToString())}", string.Empty, null);
@@ -51,11 +51,13 @@ namespace Mastodon.Api
         /// </summary>
         /// <param name="domain"></param>
         /// <param name="id"></param>
-        /// <returns>Returns an array of <see cref="AccountModel" /></returns>
-        public static async Task<Account> RebloggedBy(string domain, int id)
+        /// <returns>Returns an array of <see cref="Account" /></returns>
+        public static async Task<MastodonList<Account>> RebloggedBy(string domain, long id, long max_id = 0,
+            long since_id = 0, int limit = 40)
         {
-            return await HttpHelper.GetAsync<Account>(
-                $"{HttpHelper.HTTPS}{domain}{Constants.StatusesRebloggedBy.Id(id.ToString())}", string.Empty, null);
+            return await HttpHelper.GetListAsync<Account>(
+                $"{HttpHelper.HTTPS}{domain}{Constants.StatusesRebloggedBy.Id(id.ToString())}", string.Empty, max_id, since_id,
+                (nameof(limit), limit.ToString()));
         }
 
         /// <summary>
@@ -63,11 +65,13 @@ namespace Mastodon.Api
         /// </summary>
         /// <param name="domain"></param>
         /// <param name="id"></param>
-        /// <returns>Returns an array of <see cref="AccountModel" /></returns>
-        public static async Task<Account> FavouritedBy(string domain, int id)
+        /// <returns>Returns an array of <see cref="Account" /></returns>
+        public static async Task<MastodonList<Account>> FavouritedBy(string domain, long id, long max_id = 0,
+            long since_id = 0, int limit = 40)
         {
-            return await HttpHelper.GetAsync<Account>(
-                $"{HttpHelper.HTTPS}{domain}{Constants.StatusesFavouritedBy.Id(id.ToString())}", string.Empty, null);
+            return await HttpHelper.GetListAsync<Account>(
+                $"{HttpHelper.HTTPS}{domain}{Constants.StatusesFavouritedBy.Id(id.ToString())}", string.Empty, max_id, since_id,
+                (nameof(limit), limit.ToString()));
         }
 
         /// <summary>
@@ -80,9 +84,9 @@ namespace Mastodon.Api
         /// <param name="sensitive"> (optional) set this to mark the media of the status as NSFW</param>
         /// <param name="spoiler_text">(optional) text to be shown as a warning before the actual content</param>
         /// <param name="visibility">
-        ///     (optional) either  <see cref="StatusModel.STATUSVISIBILITY_PUBLIC" />,
-        ///     <see cref="StatusModel.STATUSVISIBILITY_UNLISTED" />, <see cref="StatusModel.STATUSVISIBILITY_PRIVATE" />,
-        ///     <see cref="StatusModel.STATUSVISIBILITY_DIRECT" />
+        ///     (optional) either  <see cref="Visibility.Public" />,
+        ///     <see cref="Visibility.Unlisted" />, <see cref="Visibility.Private" />,
+        ///     <see cref="Visibility.Direct" />
         /// </param>
         /// <param name="media_ids">(optional) array of media IDs to attach to the status (maximum 4)</param>
         /// <returns></returns>
@@ -101,9 +105,9 @@ namespace Mastodon.Api
             param.Add((nameof(in_reply_to_id), in_reply_to_id.ToString()));
             param.Add((nameof(sensitive), sensitive.ToString()));
             param.Add((nameof(spoiler_text), spoiler_text));
-            param.Add((nameof(visibility), visibility.ToString("D")));
+            param.Add((nameof(visibility), visibility.ToString("F")));
             return await HttpHelper.PostAsync<Status, string>($"{HttpHelper.HTTPS}{domain}{Constants.StatusesPost}",
-                token, param);
+                token, param.ToArray());
         }
 
         /// <summary>
@@ -113,9 +117,10 @@ namespace Mastodon.Api
         /// <param name="token"></param>
         /// <param name="id"></param>
         /// <returns></returns>
-        public static async Task Delete(string domain, string token, int id)
+        public static async Task Delete(string domain, string token, long id)
         {
-            await HttpHelper.DeleteAsync($"{HttpHelper.HTTPS}{domain}{Constants.StatusesDelete.Id(id.ToString())}",
+            await HttpHelper.DeleteAsync<HttpContent>(
+                $"{HttpHelper.HTTPS}{domain}{Constants.StatusesDelete.Id(id.ToString())}",
                 token);
         }
 
@@ -125,8 +130,8 @@ namespace Mastodon.Api
         /// <param name="domain"></param>
         /// <param name="token"></param>
         /// <param name="id"></param>
-        /// <returns>Returns the target <see cref="StatusModel" /></returns>
-        public static async Task<Status> Reblog(string domain, string token, int id)
+        /// <returns>Returns the target <see cref="Status" /></returns>
+        public static async Task<Status> Reblog(string domain, string token, long id)
         {
             return await HttpHelper.PostAsync<Status, HttpContent>(
                 $"{HttpHelper.HTTPS}{domain}{Constants.StatusesReblog.Id(id.ToString())}", token, null);
@@ -138,8 +143,8 @@ namespace Mastodon.Api
         /// <param name="domain"></param>
         /// <param name="token"></param>
         /// <param name="id"></param>
-        /// <returns>Returns the target <see cref="StatusModel" /></returns>
-        public static async Task<Status> UnReblog(string domain, string token, int id)
+        /// <returns>Returns the target <see cref="Status" /></returns>
+        public static async Task<Status> UnReblog(string domain, string token, long id)
         {
             return await HttpHelper.PostAsync<Status, HttpContent>(
                 $"{HttpHelper.HTTPS}{domain}{Constants.StatusesUnReblog.Id(id.ToString())}", token, null);
@@ -151,8 +156,8 @@ namespace Mastodon.Api
         /// <param name="domain"></param>
         /// <param name="token"></param>
         /// <param name="id"></param>
-        /// <returns>Returns the target <see cref="StatusModel" /></returns>
-        public static async Task<Status> Favourite(string domain, string token, int id)
+        /// <returns>Returns the target <see cref="Status" /></returns>
+        public static async Task<Status> Favourite(string domain, string token, long id)
         {
             return await HttpHelper.PostAsync<Status, HttpContent>(
                 $"{HttpHelper.HTTPS}{domain}{Constants.StatusesFavourite.Id(id.ToString())}", token, null);
@@ -164,11 +169,36 @@ namespace Mastodon.Api
         /// <param name="domain"></param>
         /// <param name="token"></param>
         /// <param name="id"></param>
-        /// <returns>Returns the target <see cref="StatusModel" /></returns>
-        public static async Task<Status> UnFavourite(string domain, string token, int id)
+        /// <returns>Returns the target <see cref="Status" /></returns>
+        public static async Task<Status> UnFavourite(string domain, string token, long id)
         {
             return await HttpHelper.PostAsync<Status, HttpContent>(
                 $"{HttpHelper.HTTPS}{domain}{Constants.StatusesUnFavourite.Id(id.ToString())}", token, null);
+        }
+        
+        
+        public static async Task<Status> Pin(string domain, string token, long id)
+        {
+            return await HttpHelper.PostAsync<Status, HttpContent>(
+                $"{HttpHelper.HTTPS}{domain}{Constants.StatusesPin.Id(id.ToString())}", token, null);
+        }
+
+        public static async Task<Status> UnPin(string domain, string token, long id)
+        {
+            return await HttpHelper.PostAsync<Status, HttpContent>(
+                $"{HttpHelper.HTTPS}{domain}{Constants.StatusesUnpin.Id(id.ToString())}", token, null);
+        }
+        
+        public static async Task<Status> Mute(string domain, string token, long id)
+        {
+            return await HttpHelper.PostAsync<Status, HttpContent>(
+                $"{HttpHelper.HTTPS}{domain}{Constants.StatusesMute.Id(id.ToString())}", token, null);
+        }
+
+        public static async Task<Status> UnMute(string domain, string token, long id)
+        {
+            return await HttpHelper.PostAsync<Status, HttpContent>(
+                $"{HttpHelper.HTTPS}{domain}{Constants.StatusesUnmute.Id(id.ToString())}", token, null);
         }
     }
 }

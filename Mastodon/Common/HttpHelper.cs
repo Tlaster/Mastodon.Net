@@ -25,9 +25,9 @@ namespace Mastodon.Common
 
         private static bool CheckForValue<T>((string Key, T Value) kvp)
         {
-            return !string.IsNullOrEmpty(kvp.Value.ToString()) &&
-                   (!int.TryParse(kvp.Value.ToString(), out var intValue) || intValue > 0) &&
-                   (!bool.TryParse(kvp.Value.ToString(), out var boolValue) || boolValue);
+            return !string.IsNullOrEmpty(kvp.Value?.ToString()) &&
+                   (!int.TryParse(kvp.Value?.ToString(), out var intValue) || intValue > 0) &&
+                   (!bool.TryParse(kvp.Value?.ToString(), out var boolValue) || boolValue);
         }
 
         public static IEnumerable<(string, T)> ArrayEncode<T>(string paramName, params T[] values)
@@ -47,7 +47,7 @@ namespace Mastodon.Common
         }
 
         public static async Task<string> GetAsync(string url, string token,
-            IEnumerable<(string Key, string Value)> param)
+            params (string Key, string Value)[] param)
         {
             using (var client = GetHttpClient(token))
             {
@@ -55,13 +55,28 @@ namespace Mastodon.Common
             }
         }
 
-        public static async Task<T> GetAsync<T>(string url, string token, IEnumerable<(string Key, string Value)> param)
+        public static async Task<T> GetAsync<T>(string url, string token, params (string Key, string Value)[] param)
         {
             return JsonConvert.DeserializeObject<T>(await GetAsync(url, token, param));
         }
 
-        public static async Task<MastodonList<T>> GetArrayAsync<T>(string url, string token, int max_id = 0,
-            int since_id = 0, params (string Key, string Value)[] param)
+//        public static async Task<MastodonList<T>> GetListAsync<T>(string url, string token, long max_id = 0,
+//            long since_id = 0, params (string Key, string Value)[] param)
+//        {
+//            var p = new List<(string Key, string Value)>
+//            {
+//                (nameof(max_id), max_id.ToString()),
+//                (nameof(since_id), since_id.ToString())
+//            };
+//            if (param != null)
+//                p.AddRange(param);
+//            return await GetListAsync<T>(url, token, p);
+//        }
+
+        public static async Task<MastodonList<T>> GetListAsync<T>(string url, string token,
+            long max_id = 0,
+            long since_id = 0, 
+            params (string Key, string Value)[] param)
         {
             var p = new List<(string Key, string Value)>
             {
@@ -70,12 +85,6 @@ namespace Mastodon.Common
             };
             if (param != null)
                 p.AddRange(param);
-            return await GetArrayAsync<T>(url, token, p);
-        }
-
-        public static async Task<MastodonList<T>> GetArrayAsync<T>(string url, string token,
-            IEnumerable<(string Key, string Value)> param)
-        {
             using (var client = GetHttpClient(token))
             using (var res = await client.GetAsync(UrlEncode(url, param)))
             {
@@ -96,23 +105,58 @@ namespace Mastodon.Common
                     MaxId = maxId,
                     SinceId = sinceId
                 };
-
             }
         }
 
         public static async Task<T> PostAsync<T, TValue>(string url, string token,
-            IEnumerable<(string Key, TValue Value)> param)
+            params (string Key, TValue Value)[] param)
         {
             return JsonConvert.DeserializeObject<T>(await PostAsync(url, token, param));
         }
 
         public static async Task<string> PostAsync<TValue>(string url, string token,
-            IEnumerable<(string Key, TValue Value)> param)
+            params (string Key, TValue Value)[] param)
+        {
+            return await HttpMethodAsync(url, token, HttpMethod.Post, param);
+        }
+        
+        public static async Task<T> PutAsync<T, TValue>(string url, string token,
+            params (string Key, TValue Value)[] param)
+        {
+            return JsonConvert.DeserializeObject<T>(await PutAsync(url, token, param));
+        }
+        
+        public static async Task<string> PutAsync<TValue>(string url, string token,
+            params (string Key, TValue Value)[] param)
+        {
+            return await HttpMethodAsync(url, token, HttpMethod.Put, param);
+        }
+        
+        public static async Task<T> DeleteAsync<T, TValue>(string url, string token,
+            params (string Key, TValue Value)[] param)
+        {
+            return JsonConvert.DeserializeObject<T>(await DeleteAsync(url, token, param));
+        }
+
+        public static async Task<string> DeleteAsync<TValue>(string url, string token,
+            params (string Key, TValue Value)[] param)
+        {
+            return await HttpMethodAsync(url, token, HttpMethod.Delete, param);
+        }
+
+        public static async Task<string> PatchAsync<TValue>(string url, string token,
+            params (string Key, TValue Value)[] param)
+        {
+            return await HttpMethodAsync(url, token, new HttpMethod("PATCH"), param);
+        }
+
+        private static async Task<string> HttpMethodAsync<TValue>(string url, string token, HttpMethod method,
+            params (string Key, TValue Value)[] param) 
         {
             using (var client = GetHttpClient(token))
             {
                 if (param == null)
-                    param = new List<(string Key, TValue Value)>();
+                    param = new List<(string Key, TValue Value)>().ToArray();
                 if (param.Select(p => p.Value).Any(item => item is HttpContent))
                     using (var formData = new MultipartFormDataContent())
                     {
@@ -121,7 +165,7 @@ namespace Mastodon.Common
                                 formData.Add(item.Value as StreamContent, item.Key, "file");
                             else if (CheckForValue(item))
                                 formData.Add(item.Value as HttpContent, item.Key);
-                        using (var res = await client.PostAsync(url, formData))
+                        using (var res = await client.SendAsync(new HttpRequestMessage(method, url) {Content = formData}))
                         {
                             return CheckForError(await res.Content.ReadAsStringAsync());
                         }
@@ -131,40 +175,9 @@ namespace Mastodon.Common
                 var items = param.Where(CheckForValue)
                     .Select(item => new KeyValuePair<string, string>(item.Key, item.Value.ToString()));
                 using (var formData = new FormUrlEncodedContent(items))
-                using (var res = await client.PostAsync(url, formData))
+                using (var res = await client.SendAsync(new HttpRequestMessage(method, url) {Content = formData}))
                 {
                     return CheckForError(await res.Content.ReadAsStringAsync());
-                }
-            }
-        }
-
-
-        public static async Task<string> DeleteAsync(string url, string token)
-        {
-            using (var client = GetHttpClient(token))
-            using (var response = await client.SendAsync(new HttpRequestMessage(new HttpMethod("DELETE"), url)))
-            {
-                return CheckForError(await response.Content.ReadAsStringAsync());
-            }
-        }
-
-        public static async Task<string> PatchAsync<TValue>(string url, string token,
-            IEnumerable<(string Key, TValue Value)> param)
-            where TValue : HttpContent
-        {
-            using (var formData = new MultipartFormDataContent())
-            {
-                foreach (var item in param)
-                    if (item.Value is StreamContent)
-                        formData.Add(new StringContent(Convert.ToBase64String(await item.Value.ReadAsByteArrayAsync())),
-                            item.Key);
-                    else
-                        formData.Add(item.Value, item.Key);
-                using (var client = GetHttpClient(token))
-                using (var response =
-                    await client.SendAsync(new HttpRequestMessage(new HttpMethod("PATCH"), url) {Content = formData}))
-                {
-                    return CheckForError(await response.Content.ReadAsStringAsync());
                 }
             }
         }
