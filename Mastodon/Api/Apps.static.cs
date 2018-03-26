@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Mastodon.Common;
 using Mastodon.Model;
 
@@ -28,7 +29,7 @@ namespace Mastodon.Api
         {
             return await HttpHelper.PostAsync<AppRegistration, string>($"{HttpHelper.HTTPS}{domain}{Constants.AppsRegistering}",
                 null, (nameof(client_name), client_name), (nameof(redirect_uris), redirect_uris),
-                (nameof(website), website), (nameof(scopes), string.Join(" ", scopes)));
+                (nameof(website), website), (nameof(scopes), string.Join(" ", scopes.Select(it => it.ToString("F").ToLowerInvariant()))));
         }
     }
 }

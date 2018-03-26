@@ -105,7 +105,7 @@ namespace Mastodon.Api
             param.Add((nameof(in_reply_to_id), in_reply_to_id.ToString()));
             param.Add((nameof(sensitive), sensitive.ToString()));
             param.Add((nameof(spoiler_text), spoiler_text));
-            param.Add((nameof(visibility), visibility.ToString("F")));
+            param.Add((nameof(visibility), visibility.ToString("F").ToLowerInvariant()));
             return await HttpHelper.PostAsync<Status, string>($"{HttpHelper.HTTPS}{domain}{Constants.StatusesPost}",
                 token, param.ToArray());
         }
