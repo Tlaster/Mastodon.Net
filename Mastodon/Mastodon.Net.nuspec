@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Mastodon.Net</id>
+    <version>1.0.7</version>
+    <title>Mastodon.Net</title>
+    <authors>Tlaster</authors>
+    <owners>Tlaster</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>https://github.com/Tlaster/Mastodon.Net/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/Tlaster/Mastodon.Net</projectUrl>
+    <description>.Net wrapper for Mastodon Api</description>
+    <tags>Mastodon</tags>
+    <dependencies>
+      <dependency id="Newtonsoft.Json" version="11.0.2" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\Release\netstandard2.0\Mastodon.dll" target="lib\netstandard2.0\Mastodon.dll" />
+  </files>
+</package>
