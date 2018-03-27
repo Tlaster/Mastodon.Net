@@ -2,7 +2,9 @@
 .Net wrapper(.Net Standard 1.4) for [Mastodon](https://github.com/tootsuite/mastodon) Api  
 
 # Getting Start  
-[![NuGet](https://img.shields.io/badge/NuGet%20-1.0.0-blue.svg)](https://www.nuget.org/packages/Mastodon.Net/)
+[![NuGet version](https://badge.fury.io/nu/Mastodon.Net.svg)](https://badge.fury.io/nu/Mastodon.Net)
+[![Build status](https://ci.appveyor.com/api/projects/status/m1gli5hd3yk30rl2?svg=true)](https://ci.appveyor.com/project/Tlaster/mastodon-net)
+
 
 # Sample  
 ```C#            
