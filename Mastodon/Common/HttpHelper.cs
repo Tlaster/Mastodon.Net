@@ -10,44 +10,70 @@ using Mastodon.Model;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
+
+namespace Mastodon
+{
+    public static class MastodonApi
+    {
+        public static MastodonApiConfigure ApiConfigure { get; } = new MastodonApiConfigure();
+
+        public static void Configure(Action<MastodonApiConfigure> config)
+        {
+            config?.Invoke(ApiConfigure);
+        }
+    }
+
+    public class MastodonApiConfigure
+    {
+        public HttpMessageHandler HttpMessageHandler { get; set; }
+    }
+}
+
 namespace Mastodon.Common
 {
-    internal static class HttpHelper
+    internal class HttpHelper
     {
+        public static HttpHelper Instance { get; } = new HttpHelper();
+
+        private HttpHelper()
+        {
+            
+        }
+        
         public const string HTTPS = "https://";
         public const string HTTP = "http://";
 
-        private static string UrlEncode(string url, IEnumerable<(string Key, string Value)> param)
+        private string UrlEncode(string url, IEnumerable<(string Key, string Value)> param)
         {
             return param != null
                 ? $"{url}?{string.Join("&", param.Where(CheckForValue).Select(kvp => $"{kvp.Key}={kvp.Value}"))}"
                 : url;
         }
 
-        private static bool CheckForValue<T>((string Key, T Value) kvp)
+        private bool CheckForValue<T>((string Key, T Value) kvp)
         {
             return !string.IsNullOrEmpty(kvp.Value?.ToString()) &&
                    (!int.TryParse(kvp.Value?.ToString(), out var intValue) || intValue > 0) &&
                    (!bool.TryParse(kvp.Value?.ToString(), out var boolValue) || boolValue);
         }
 
-        public static IEnumerable<(string, T)> ArrayEncode<T>(string paramName, params T[] values)
+        public IEnumerable<(string, T)> ArrayEncode<T>(string paramName, params T[] values)
         {
             paramName = $"{paramName}[]";
             return values.Select(value => (paramName, value));
         }
 
-        private static HttpClient GetHttpClient(string token, string tokenType = "Bearer")
+        private HttpClient GetHttpClient(string token, string tokenType = "Bearer")
         {
             return string.IsNullOrEmpty(token)
-                ? new HttpClient()
-                : new HttpClient
+                ? new HttpClient(MastodonApi.ApiConfigure.HttpMessageHandler)
+                : new HttpClient(MastodonApi.ApiConfigure.HttpMessageHandler)
                 {
                     DefaultRequestHeaders = {Authorization = new AuthenticationHeaderValue(tokenType, token)}
                 };
         }
 
-        public static async Task<string> GetAsync(string url, string token,
+        public async Task<string> GetAsync(string url, string token,
             params (string Key, string Value)[] param)
         {
             using (var client = GetHttpClient(token))
@@ -56,7 +82,7 @@ namespace Mastodon.Common
             }
         }
 
-        public static async Task<T> GetAsync<T>(string url, string token, params (string Key, string Value)[] param)
+        public async Task<T> GetAsync<T>(string url, string token, params (string Key, string Value)[] param)
         {
             return JsonConvert.DeserializeObject<T>(await GetAsync(url, token, param));
         }
@@ -74,7 +100,7 @@ namespace Mastodon.Common
 //            return await GetListAsync<T>(url, token, p);
 //        }
 
-        public static async Task<MastodonList<T>> GetListAsync<T>(string url, string token,
+        public async Task<MastodonList<T>> GetListAsync<T>(string url, string token,
             long max_id = 0,
             long since_id = 0, 
             params (string Key, string Value)[] param)
@@ -109,49 +135,49 @@ namespace Mastodon.Common
             }
         }
 
-        public static async Task<T> PostAsync<T, TValue>(string url, string token,
+        public async Task<T> PostAsync<T, TValue>(string url, string token,
             params (string Key, TValue Value)[] param)
         {
             return JsonConvert.DeserializeObject<T>(await PostAsync(url, token, param));
         }
 
-        public static async Task<string> PostAsync<TValue>(string url, string token,
+        public async Task<string> PostAsync<TValue>(string url, string token,
             params (string Key, TValue Value)[] param)
         {
             return await HttpMethodAsync(url, token, HttpMethod.Post, param);
         }
         
-        public static async Task<T> PutAsync<T, TValue>(string url, string token,
+        public async Task<T> PutAsync<T, TValue>(string url, string token,
             params (string Key, TValue Value)[] param)
         {
             return JsonConvert.DeserializeObject<T>(await PutAsync(url, token, param));
         }
         
-        public static async Task<string> PutAsync<TValue>(string url, string token,
+        public async Task<string> PutAsync<TValue>(string url, string token,
             params (string Key, TValue Value)[] param)
         {
             return await HttpMethodAsync(url, token, HttpMethod.Put, param);
         }
         
-        public static async Task<T> DeleteAsync<T, TValue>(string url, string token,
+        public async Task<T> DeleteAsync<T, TValue>(string url, string token,
             params (string Key, TValue Value)[] param)
         {
             return JsonConvert.DeserializeObject<T>(await DeleteAsync(url, token, param));
         }
 
-        public static async Task<string> DeleteAsync<TValue>(string url, string token,
+        public async Task<string> DeleteAsync<TValue>(string url, string token,
             params (string Key, TValue Value)[] param)
         {
             return await HttpMethodAsync(url, token, HttpMethod.Delete, param);
         }
 
-        public static async Task<string> PatchAsync<TValue>(string url, string token,
+        public async Task<string> PatchAsync<TValue>(string url, string token,
             params (string Key, TValue Value)[] param)
         {
             return await HttpMethodAsync(url, token, new HttpMethod("PATCH"), param);
         }
 
-        private static async Task<string> HttpMethodAsync<TValue>(string url, string token, HttpMethod method,
+        private async Task<string> HttpMethodAsync<TValue>(string url, string token, HttpMethod method,
             params (string Key, TValue Value)[] param) 
         {
             using (var client = GetHttpClient(token))
@@ -183,7 +209,7 @@ namespace Mastodon.Common
             }
         }
 
-        private static string CheckForError(string json)
+        private string CheckForError(string json)
         {
             if (string.IsNullOrEmpty(json))
                 return json;

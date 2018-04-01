@@ -19,7 +19,7 @@ namespace Mastodon.Api
         /// </returns>
         public static async Task<Results> Searching(string domain, string q, bool resolve = false)
         {
-            return await HttpHelper.GetAsync<Results>($"{HttpHelper.HTTPS}{domain}{Constants.Search}", string.Empty, (nameof(q), q), (nameof(resolve), resolve.ToString()));
+            return await HttpHelper.Instance.GetAsync<Results>($"{HttpHelper.HTTPS}{domain}{Constants.Search}", string.Empty, (nameof(q), q), (nameof(resolve), resolve.ToString()));
         }
     }
 }

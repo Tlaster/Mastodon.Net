@@ -17,7 +17,7 @@ namespace Mastodon.Api
         public static async Task<MastodonList<Account>> Fetching(string domain, string token, long max_id = 0,
             long since_id = 0, int limit = 40)
         {
-            return await HttpHelper.GetListAsync<Account>($"{HttpHelper.HTTPS}{domain}{Constants.MutesFetching}",
+            return await HttpHelper.Instance.GetListAsync<Account>($"{HttpHelper.HTTPS}{domain}{Constants.MutesFetching}",
                 token, max_id, since_id, (nameof(limit), limit.ToString()));
         }
     }

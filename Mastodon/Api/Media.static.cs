@@ -18,7 +18,7 @@ namespace Mastodon.Api
         public static async Task<Attachment> Uploading(string domain, string token, byte[] file,
             string description = null)
         {
-            return await HttpHelper.PostAsync<Attachment, HttpContent>(
+            return await HttpHelper.Instance.PostAsync<Attachment, HttpContent>(
                 $"{HttpHelper.HTTPS}{domain}{Constants.MediaUploading}", token,
                 (nameof(file), new StreamContent(new MemoryStream(file))),
                 (nameof(description), new StringContent(description)));

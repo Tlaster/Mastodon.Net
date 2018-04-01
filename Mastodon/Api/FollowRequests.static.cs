@@ -18,7 +18,7 @@ namespace Mastodon.Api
         public static async Task<MastodonList<Account>> Fetching(string domain, string token, long max_id = 0,
             long since_id = 0, int limit = 40)
         {
-            return await HttpHelper.GetListAsync<Account>(
+            return await HttpHelper.Instance.GetListAsync<Account>(
                 $"{HttpHelper.HTTPS}{domain}{Constants.FollowRequestsFetching}", token, max_id, since_id,
                 (nameof(limit), limit.ToString()));
         }
@@ -32,7 +32,7 @@ namespace Mastodon.Api
         /// <returns></returns>
         public static async Task Authorize(string domain, string token, long id)
         {
-            await HttpHelper.PostAsync<HttpContent>(
+            await HttpHelper.Instance.PostAsync<HttpContent>(
                 $"{HttpHelper.HTTPS}{domain}{Constants.FollowRequestsAuthorize.Id(id.ToString())}", token, null);
         }
 
@@ -45,7 +45,7 @@ namespace Mastodon.Api
         /// <returns></returns>
         public static async Task Reject(string domain, string token, long id)
         {
-            await HttpHelper.PostAsync<HttpContent>(
+            await HttpHelper.Instance.PostAsync<HttpContent>(
                 $"{HttpHelper.HTTPS}{domain}{Constants.FollowRequestsReject.Id(id.ToString())}", token, null);
         }
     }

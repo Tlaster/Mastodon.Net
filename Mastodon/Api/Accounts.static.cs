@@ -21,7 +21,7 @@ namespace Mastodon.Api
         /// </returns>
         public static async Task<Account> Fetching(string domain, long id, string token)
         {
-            return await HttpHelper.GetAsync<Account>(
+            return await HttpHelper.Instance.GetAsync<Account>(
                 $"{HttpHelper.HTTPS}{domain}{Constants.AccountsFetching.Id(id.ToString())}", token, null);
         }
 
@@ -33,7 +33,7 @@ namespace Mastodon.Api
         /// <returns></returns>
         public static async Task<Account> VerifyCredentials(string domain, string token)
         {
-            return await HttpHelper.GetAsync<Account>(
+            return await HttpHelper.Instance.GetAsync<Account>(
                 $"{HttpHelper.HTTPS}{domain}{Constants.AccountsVerifyCredentials}", token, null);
         }
 
@@ -50,7 +50,7 @@ namespace Mastodon.Api
         public static async Task UpdateCredentials(string domain, string token, string display_name, string note,
             byte[] avatar, byte[] header)
         {
-            await HttpHelper.PatchAsync($"{HttpHelper.HTTPS}{domain}{Constants.AccountsUpdateCredentials}", token,
+            await HttpHelper.Instance.PatchAsync($"{HttpHelper.HTTPS}{domain}{Constants.AccountsUpdateCredentials}", token,
                 new (string, HttpContent)[]
                 {
                     (nameof(display_name), new StringContent(display_name)),
@@ -75,7 +75,7 @@ namespace Mastodon.Api
         {
             if (limit > 80 || limit < 0)
                 throw new ArgumentOutOfRangeException($"{nameof(limit)}");
-            return await HttpHelper.GetListAsync<Account>(
+            return await HttpHelper.Instance.GetListAsync<Account>(
                 $"{HttpHelper.HTTPS}{domain}{Constants.AccountsFollowers.Id(id.ToString())}", token, param: new[]
                 {
                     (nameof(max_id), max_id.ToString()),
@@ -96,7 +96,7 @@ namespace Mastodon.Api
         public static async Task<MastodonList<Account>> Following(string domain, string token, long id, long max_id = 0,
             long since_id = 0)
         {
-            return await HttpHelper.GetListAsync<Account>(
+            return await HttpHelper.Instance.GetListAsync<Account>(
                 $"{HttpHelper.HTTPS}{domain}{Constants.AccountsFollowing.Id(id.ToString())}", token, max_id, since_id);
         }
 
@@ -115,7 +115,7 @@ namespace Mastodon.Api
             long since_id = 0, bool only_media = false, bool exclude_replies = false, bool pinned = false,
             int limit = 20)
         {
-            return await HttpHelper.GetListAsync<Status>(
+            return await HttpHelper.Instance.GetListAsync<Status>(
                 $"{HttpHelper.HTTPS}{domain}{Constants.AccountsStatuses.Id(id.ToString())}", token, param: new[]
                 {
                     (nameof(max_id), max_id.ToString()),
@@ -136,7 +136,7 @@ namespace Mastodon.Api
         /// <returns>Returns the target account's <see cref="Relationship" /></returns>
         public static async Task<Relationship> Follow(string domain, string token, long id)
         {
-            return await HttpHelper.PostAsync<Relationship, HttpContent>(
+            return await HttpHelper.Instance.PostAsync<Relationship, HttpContent>(
                 $"{HttpHelper.HTTPS}{domain}{Constants.AccountsFollow.Id(id.ToString())}", token, null);
         }
 
@@ -149,7 +149,7 @@ namespace Mastodon.Api
         /// <returns>Returns the target account's <see cref="Relationship" /></returns>
         public static async Task<Relationship> UnFollow(string domain, string token, long id)
         {
-            return await HttpHelper.PostAsync<Relationship, HttpContent>(
+            return await HttpHelper.Instance.PostAsync<Relationship, HttpContent>(
                 $"{HttpHelper.HTTPS}{domain}{Constants.AccountsUnFollow.Id(id.ToString())}", token, null);
         }
 
@@ -162,7 +162,7 @@ namespace Mastodon.Api
         /// <returns>Returns the target account's <see cref="Relationship" /></returns>
         public static async Task<Relationship> Block(string domain, string token, long id)
         {
-            return await HttpHelper.PostAsync<Relationship, HttpContent>(
+            return await HttpHelper.Instance.PostAsync<Relationship, HttpContent>(
                 $"{HttpHelper.HTTPS}{domain}{Constants.AccountsBlock.Id(id.ToString())}", token, null);
         }
 
@@ -175,7 +175,7 @@ namespace Mastodon.Api
         /// <returns>Returns the target account's <see cref="Relationship" /></returns>
         public static async Task<Relationship> UnBlock(string domain, string token, long id)
         {
-            return await HttpHelper.PostAsync<Relationship, HttpContent>(
+            return await HttpHelper.Instance.PostAsync<Relationship, HttpContent>(
                 $"{HttpHelper.HTTPS}{domain}{Constants.AccountsUnBlock.Id(id.ToString())}", token, null);
         }
 
@@ -189,7 +189,7 @@ namespace Mastodon.Api
         /// <returns>Returns the target account's <see cref="Relationship" /></returns>
         public static async Task<Relationship> Mute(string domain, string token, long id, bool notifications = true)
         {
-            return await HttpHelper.PostAsync<Relationship, HttpContent>(
+            return await HttpHelper.Instance.PostAsync<Relationship, HttpContent>(
                 $"{HttpHelper.HTTPS}{domain}{Constants.AccountsMute.Id(id.ToString())}", token,
                 (nameof(notifications), new StringContent(notifications.ToString())));
         }
@@ -203,7 +203,7 @@ namespace Mastodon.Api
         /// <returns>Returns the target account's <see cref="Relationship" /></returns>
         public static async Task<Relationship> UnMute(string domain, string token, long id)
         {
-            return await HttpHelper.PostAsync<Relationship, HttpContent>(
+            return await HttpHelper.Instance.PostAsync<Relationship, HttpContent>(
                 $"{HttpHelper.HTTPS}{domain}{Constants.AccountsUnMute.Id(id.ToString())}", token, null);
         }
 
@@ -217,9 +217,9 @@ namespace Mastodon.Api
         public static async Task<MastodonList<Relationship>> Relationships(string domain, string token,
             params long[] id)
         {
-            return await HttpHelper.GetListAsync<Relationship>(
+            return await HttpHelper.Instance.GetListAsync<Relationship>(
                 $"{HttpHelper.HTTPS}{domain}{Constants.AccountsRelationships}", token,
-                param: HttpHelper.ArrayEncode(nameof(id), id.Select(v => v.ToString()).ToArray()).ToArray());
+                param: HttpHelper.Instance.ArrayEncode(nameof(id), id.Select(v => v.ToString()).ToArray()).ToArray());
         }
 
         /// <summary>
@@ -236,7 +236,7 @@ namespace Mastodon.Api
         public static async Task<MastodonList<Account>> Search(string domain, string token, string q, int limit = 40,
             bool following = false)
         {
-            return await HttpHelper.GetListAsync<Account>($"{HttpHelper.HTTPS}{domain}{Constants.AccountsSearch}",
+            return await HttpHelper.Instance.GetListAsync<Account>($"{HttpHelper.HTTPS}{domain}{Constants.AccountsSearch}",
                 token, param: new[]
                 {
                     (nameof(q), q),

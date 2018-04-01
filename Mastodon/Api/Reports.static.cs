@@ -18,7 +18,7 @@ namespace Mastodon.Api
         public static async Task<MastodonList<Report>> Fetching(string domain, string token, long max_id = 0,
             long since_id = 0)
         {
-            return await HttpHelper.GetListAsync<Report>($"{HttpHelper.HTTPS}{domain}{Constants.ReportsFetching}",
+            return await HttpHelper.Instance.GetListAsync<Report>($"{HttpHelper.HTTPS}{domain}{Constants.ReportsFetching}",
                 token, max_id, since_id);
         }
 
@@ -34,11 +34,11 @@ namespace Mastodon.Api
         public static async Task<Report> Reporting(string domain, string token, long account_id, string comment,
             params long[] status_ids)
         {
-            var param = HttpHelper.ArrayEncode(nameof(status_ids), status_ids.Select(v => v.ToString()).ToArray())
+            var param = HttpHelper.Instance.ArrayEncode(nameof(status_ids), status_ids.Select(v => v.ToString()).ToArray())
                 .ToList();
             param.Add((nameof(account_id), account_id.ToString()));
             param.Add((nameof(comment), comment));
-            return await HttpHelper.PostAsync<Report, string>($"{HttpHelper.HTTPS}{domain}{Constants.ReportsReporting}",
+            return await HttpHelper.Instance.PostAsync<Report, string>($"{HttpHelper.HTTPS}{domain}{Constants.ReportsReporting}",
                 token, param.ToArray());
         }
     }

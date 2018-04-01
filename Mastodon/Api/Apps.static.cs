@@ -27,7 +27,7 @@ namespace Mastodon.Api
         public static async Task<AppRegistration> Register(string domain, string client_name, string website = "",
             string redirect_uris = Constants.NoRedirect, params Scope[] scopes)
         {
-            return await HttpHelper.PostAsync<AppRegistration, string>($"{HttpHelper.HTTPS}{domain}{Constants.AppsRegistering}",
+            return await HttpHelper.Instance.PostAsync<AppRegistration, string>($"{HttpHelper.HTTPS}{domain}{Constants.AppsRegistering}",
                 null, (nameof(client_name), client_name), (nameof(redirect_uris), redirect_uris),
                 (nameof(website), website), (nameof(scopes), string.Join(" ", scopes.Select(it => it.ToString("F").ToLowerInvariant()))));
         }

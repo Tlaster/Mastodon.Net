@@ -15,7 +15,7 @@ namespace Mastodon.Api
         /// <returns>Returns the local representation of the followed account, as an <see cref="Account" /></returns>
         public static async Task<Account> Following(string domain, string token, string uri)
         {
-            return await HttpHelper.PostAsync<Account, string>(
+            return await HttpHelper.Instance.PostAsync<Account, string>(
                 $"{HttpHelper.HTTPS}{domain}{Constants.FollowsFollowing}", token, (nameof(uri), uri));
         }
     }

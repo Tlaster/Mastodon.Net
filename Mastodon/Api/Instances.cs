@@ -8,13 +8,13 @@ namespace Mastodon.Api
     {
         public static async Task<Instance> Instance(string domain)
         {
-            return await HttpHelper.GetAsync<Instance>($"{HttpHelper.HTTPS}{domain}{Constants.Instance}", string.Empty,
+            return await HttpHelper.Instance.GetAsync<Instance>($"{HttpHelper.HTTPS}{domain}{Constants.Instance}", string.Empty,
                 null);
         }
 
         public static async Task<MastodonList<Emoji>> CustomEmojis(string domain)
         {
-            return await HttpHelper.GetListAsync<Emoji>($"{HttpHelper.HTTPS}{domain}{Constants.CustomEmojis}",
+            return await HttpHelper.Instance.GetListAsync<Emoji>($"{HttpHelper.HTTPS}{domain}{Constants.CustomEmojis}",
                 string.Empty);
         }
         
