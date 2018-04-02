@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
@@ -11,37 +10,36 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 
-namespace Mastodon
-{
-    public static class MastodonApi
-    {
-        public static MastodonApiConfigure ApiConfigure { get; } = new MastodonApiConfigure();
-
-        public static void Configure(Action<MastodonApiConfigure> config)
-        {
-            config?.Invoke(ApiConfigure);
-        }
-    }
-
-    public class MastodonApiConfigure
-    {
-        public HttpMessageHandler HttpMessageHandler { get; set; }
-    }
-}
+//namespace Mastodon
+//{
+//    public static class MastodonApi
+//    {
+//        public static MastodonApiConfigure ApiConfigure { get; } = new MastodonApiConfigure();
+//
+//        public static void Configure(Action<MastodonApiConfigure> config)
+//        {
+//            config?.Invoke(ApiConfigure);
+//        }
+//    }
+//
+//    public class MastodonApiConfigure
+//    {
+//        public HttpMessageHandler HttpMessageHandler { get; set; }
+//    }
+//}
 
 namespace Mastodon.Common
 {
     internal class HttpHelper
     {
-        public static HttpHelper Instance { get; } = new HttpHelper();
+        public const string HTTPS = "https://";
+        public const string HTTP = "http://";
 
         private HttpHelper()
         {
-            
         }
-        
-        public const string HTTPS = "https://";
-        public const string HTTP = "http://";
+
+        public static HttpHelper Instance { get; } = new HttpHelper();
 
         private string UrlEncode(string url, IEnumerable<(string Key, string Value)> param)
         {
@@ -66,8 +64,8 @@ namespace Mastodon.Common
         private HttpClient GetHttpClient(string token, string tokenType = "Bearer")
         {
             return string.IsNullOrEmpty(token)
-                ? new HttpClient(MastodonApi.ApiConfigure.HttpMessageHandler)
-                : new HttpClient(MastodonApi.ApiConfigure.HttpMessageHandler)
+                ? new HttpClient()
+                : new HttpClient
                 {
                     DefaultRequestHeaders = {Authorization = new AuthenticationHeaderValue(tokenType, token)}
                 };
@@ -102,7 +100,7 @@ namespace Mastodon.Common
 
         public async Task<MastodonList<T>> GetListAsync<T>(string url, string token,
             long max_id = 0,
-            long since_id = 0, 
+            long since_id = 0,
             params (string Key, string Value)[] param)
         {
             var p = new List<(string Key, string Value)>
@@ -146,19 +144,19 @@ namespace Mastodon.Common
         {
             return await HttpMethodAsync(url, token, HttpMethod.Post, param);
         }
-        
+
         public async Task<T> PutAsync<T, TValue>(string url, string token,
             params (string Key, TValue Value)[] param)
         {
             return JsonConvert.DeserializeObject<T>(await PutAsync(url, token, param));
         }
-        
+
         public async Task<string> PutAsync<TValue>(string url, string token,
             params (string Key, TValue Value)[] param)
         {
             return await HttpMethodAsync(url, token, HttpMethod.Put, param);
         }
-        
+
         public async Task<T> DeleteAsync<T, TValue>(string url, string token,
             params (string Key, TValue Value)[] param)
         {
@@ -178,7 +176,7 @@ namespace Mastodon.Common
         }
 
         private async Task<string> HttpMethodAsync<TValue>(string url, string token, HttpMethod method,
-            params (string Key, TValue Value)[] param) 
+            params (string Key, TValue Value)[] param)
         {
             using (var client = GetHttpClient(token))
             {
@@ -192,7 +190,8 @@ namespace Mastodon.Common
                                 formData.Add(item.Value as StreamContent, item.Key, "file");
                             else if (CheckForValue(item))
                                 formData.Add(item.Value as HttpContent, item.Key);
-                        using (var res = await client.SendAsync(new HttpRequestMessage(method, url) {Content = formData}))
+                        using (var res =
+                            await client.SendAsync(new HttpRequestMessage(method, url) {Content = formData}))
                         {
                             return CheckForError(await res.Content.ReadAsStringAsync());
                         }
