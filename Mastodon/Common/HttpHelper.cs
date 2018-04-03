@@ -10,23 +10,26 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 
-//namespace Mastodon
-//{
-//    public static class MastodonApi
-//    {
-//        public static MastodonApiConfigure ApiConfigure { get; } = new MastodonApiConfigure();
-//
-//        public static void Configure(Action<MastodonApiConfigure> config)
-//        {
-//            config?.Invoke(ApiConfigure);
-//        }
-//    }
-//
-//    public class MastodonApiConfigure
-//    {
-//        public HttpMessageHandler HttpMessageHandler { get; set; }
-//    }
-//}
+namespace Mastodon
+{
+    public static class MastodonApi
+    {
+        public static MastodonApiConfigure ApiConfigure { get; } = new MastodonApiConfigure();
+
+        public static void Configure(Action<MastodonApiConfigure> config)
+        {
+            config?.Invoke(ApiConfigure);
+        }
+    }
+
+    public class MastodonApiConfigure
+    {
+        public HttpMessageHandler HttpMessageHandler { get; set; } = new HttpClientHandler
+        {
+            MaxConnectionsPerServer = 20
+        };
+    }
+}
 
 namespace Mastodon.Common
 {
@@ -108,8 +111,7 @@ namespace Mastodon.Common
                 (nameof(max_id), max_id.ToString()),
                 (nameof(since_id), since_id.ToString())
             };
-            if (param != null)
-                p.AddRange(param);
+            param = param != null ? param.Concat(p).ToArray() : p.ToArray();
             using (var client = GetHttpClient(token))
             using (var res = await client.GetAsync(UrlEncode(url, param)))
             {
